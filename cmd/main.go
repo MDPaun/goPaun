@@ -5,12 +5,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	// "github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
+	"github.com/MDPaun/goPaun/cmd/config"
+	psDB "github.com/MDPaun/goPaun/pkg/storage"
 )
 
-type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-}
+// type application struct {
+// 	errorLog *log.Logger
+// 	infoLog  *log.Logger
+// 	// staff    *postgres.StaffModel
+// }
 
 func main() {
 
@@ -20,17 +25,26 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-	}
+	db := psDB.ConnectDB()
+	defer db.Close()
+
+	env := &config.Env{
+		ErrorLog: errorLog,
+		InfoLog:  infoLog,
+		DB:       db}
+
+	// app := &application{
+	// 	errorLog: errorLog,
+	// 	infoLog:  infoLog,
+	// staff:    &postgres.StaffModel{DB: db},
+	// }
 
 	srv := &http.Server{
 		Addr:     *addr,
-		ErrorLog: errorLog,
-		Handler:  app.routes(),
+		ErrorLog: env.ErrorLog,
+		Handler:  env.routes(),
 	}
-	infoLog.Printf("Starting server on %s", *addr)
+	env.InfoLog.Printf("Starting server on %s", *addr)
 	err := srv.ListenAndServe()
-	errorLog.Fatal(err)
+	env.ErrorLog.Fatal(err)
 }

@@ -1,13 +1,18 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
 
-func (app *application) routes() *http.ServeMux {
+	"github.com/MDPaun/goPaun/cmd/config"
+)
+
+func (env *config.Env) routes() *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/read", app.read)
+	mux.HandleFunc("/", env.home)
+	mux.HandleFunc("/read", env.read)
 
 	fileServer := http.FileServer(http.Dir("./../ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	return mux
+
 }
