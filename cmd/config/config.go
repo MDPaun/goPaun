@@ -1,12 +1,14 @@
 package config
 
 import (
-	"database/sql"
 	"log"
+
+	"github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
 )
 
 type Env struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
-	DB       *sql.DB
+	// DB       *sql.DB
+	Staff *postgres.StaffModel
 }

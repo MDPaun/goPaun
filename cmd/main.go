@@ -8,6 +8,7 @@ import (
 
 	// "github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
 	"github.com/MDPaun/goPaun/cmd/config"
+	"github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
 	psDB "github.com/MDPaun/goPaun/pkg/storage"
 )
 
@@ -31,7 +32,9 @@ func main() {
 	env := &config.Env{
 		ErrorLog: errorLog,
 		InfoLog:  infoLog,
-		DB:       db}
+		// DB:       db,
+		Staff: &postgres.StaffModel{DB: db},
+	}
 
 	// app := &application{
 	// 	errorLog: errorLog,
@@ -42,7 +45,8 @@ func main() {
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: env.ErrorLog,
-		Handler:  env.routes(),
+		// Handler:  env.routes(),
+		Handler: routes(env),
 	}
 	env.InfoLog.Printf("Starting server on %s", *addr)
 	err := srv.ListenAndServe()

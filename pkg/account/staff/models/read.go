@@ -17,8 +17,8 @@ type Staff struct {
 	DateAdded time.Time `json:"dateAdded"`
 }
 
-type StaffRepository interface {
-	Create(ID int) (*Staff, error)
-	Read(staff *Staff) error
-	Latest(staff *Staff) error
-}
+// type StaffRepository interface {
+// 	Create(ID int) (*Staff, error)
+// 	Read(staff *Staff) error
+// 	Latest(staff *Staff) error
+// }
