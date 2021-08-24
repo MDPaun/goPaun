@@ -1,4 +1,4 @@
-package staff
+package base
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 
 func Routes(env *config.Env, mux *http.ServeMux) *http.ServeMux {
 
-	mux.HandleFunc("/read", read(env))
+	mux.HandleFunc("/", home(env))
 
 	return mux
 }

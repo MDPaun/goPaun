@@ -36,12 +36,6 @@ func main() {
 		Staff: &postgres.StaffModel{DB: db},
 	}
 
-	// app := &application{
-	// 	errorLog: errorLog,
-	// 	infoLog:  infoLog,
-	// staff:    &postgres.StaffModel{DB: db},
-	// }
-
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: env.ErrorLog,

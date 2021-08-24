@@ -1,18 +1,29 @@
 package staff
 
-// import (
-// 	"fmt"
-// 	"net/http"
-// 	"strconv"
-// )
+import (
+	"fmt"
+	"net/http"
 
-// func read(w http.ResponseWriter, r *http.Request) {
-// 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-// 	if err != nil || id < 1 {
-// 		http.NotFound(w, r)
-// 		return
-// 	}
-// 	// Use the fmt.Fprintf() function to interpolate the id value with our response
-// 	// and write it to the http.ResponseWriter.
-// 	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
-// }
+	"github.com/MDPaun/goPaun/cmd/config"
+)
+
+func read(env *config.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/read" {
+			// env.notFound(w)
+			env.ErrorLog.Fatal()
+			return
+		}
+
+		s, err := env.Staff.Latest()
+		if err != nil {
+			// app.serverError(w, err)
+			env.ErrorLog.Fatal(err)
+			return
+		}
+		for _, staff := range s {
+			fmt.Fprintf(w, "%v\n", staff)
+		}
+
+	}
+}
