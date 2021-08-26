@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 )
@@ -17,4 +18,8 @@ type Staff struct {
 	IP        string    `json:"ip"`
 	Status    bool      `json:"status"`
 	DateAdded time.Time `json:"dateAdded"`
+}
+
+type StaffModel struct {
+	DB *sql.DB
 }

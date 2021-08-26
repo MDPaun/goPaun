@@ -1,0 +1,20 @@
+{{template "base" .}}
+
+{{define "title"}}Staff #{{.Staff.ID}}{{end}}
+
+{{define "main"}}
+    {{with .Staff}}
+        <div class='snippet'>
+            <div class='metadata'>
+                <strong>{{.FullName}}</strong>
+                <span>#{{.ID}}</span>
+            </div>
+            {{len nil}}
+            <pre><code>{{.Email}}</code></pre>
+            <div class='metadata'>
+                <time>Created: {{.Status}}</time>
+                <time>Expires: {{.DateAdded.Weekday}}</time>
+            </div>
+        </div>
+    {{end}}
+{{end}}

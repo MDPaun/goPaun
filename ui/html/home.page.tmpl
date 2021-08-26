@@ -1,6 +1,25 @@
 {{template "base" .}}
+
 {{define "title"}}Home{{end}}
+
 {{define "main"}}
-<h2>Latest Members</h2>
-<p>There's nothing to see here yet!</p>
+    <h2>Latest Staffs</h2>
+    {{if .Staffs}}
+        <table>
+            <tr>
+                <th>Full Name</th>
+                <th>Date Added</th>
+                <th>ID</th>
+            </tr>
+        {{range .Staffs}}
+            <tr>
+                <td><a href='/staff?id={{.ID}}'>{{.FullName}}</a></td>
+                <td>{{.DateAdded}}</td>
+                <td>#{{.ID}}</td>
+            </tr>
+        {{end}}
+        </table>
+    {{else}}
+        <p>There's nothing to see here... yet!</p>
+    {{end}}
 {{end}}

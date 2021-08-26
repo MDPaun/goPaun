@@ -15,6 +15,7 @@ type StaffModel struct {
 
 // This will return a specific staff member based on its id.
 func (m *StaffModel) FindByID(id int) (*models.Staff, error) {
+
 	stmt := "SELECT id, email, fullname, image, status, date_added FROM staff WHERE id = $1;"
 
 	row := m.DB.QueryRow(stmt, id)

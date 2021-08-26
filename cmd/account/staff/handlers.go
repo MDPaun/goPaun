@@ -30,7 +30,30 @@ func GetStaff(env *config.Env) http.HandlerFunc {
 				}
 				return
 			}
-			fmt.Fprintf(w, "%v", s)
+			// Use the new render helper.
+			type TemplateData = config.TemplateData
+			env.Render(w, r, "show.page.tmpl", &TemplateData{
+				Staff: s,
+			})
+			// data := &templateData{Staff: s}
+
+			// files := []string{
+			// 	"./../ui/html/show.page.tmpl",
+			// 	"./../ui/html/base.layout.tmpl",
+			// 	"./../ui/html/footer.partial.tmpl",
+			// }
+
+			// ts, err := template.ParseFiles(files...)
+			// if err != nil {
+			// 	env.ServerError(w, err)
+			// 	return
+			// }
+
+			// err = ts.Execute(w, data)
+			// if err != nil {
+			// 	env.ServerError(w, err)
+			// }
+
 		} else {
 			if r.Method != http.MethodGet {
 				env.NotFound(w)
@@ -44,35 +67,16 @@ func GetStaff(env *config.Env) http.HandlerFunc {
 				env.ServerError(w, err)
 				return
 			}
-			for _, staff := range s {
-				fmt.Fprintf(w, "%v\n", staff)
-			}
+			// for _, staff := range s {
+			// 	fmt.Fprintf(w, "%v\n", staff)
+			// }
+			type TemplateData = config.TemplateData
+			env.Render(w, r, "home.page.tmpl", &TemplateData{
+				Staffs: s,
+			})
 		}
 	}
 }
-
-// func readAll(env *config.Env) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		if r.Method != http.MethodGet {
-// 			// env.notFound(w)
-// 			// env.ErrorLog.Fatal()
-// 			w.WriteHeader(405)
-// 			w.Write([]byte("Method Not Allowed"))
-// 			return
-// 		}
-
-// 		s, err := env.Staff.Latest()
-// 		if err != nil {
-// 			// app.serverError(w, err)
-// 			env.ErrorLog.Fatal(err)
-// 			return
-// 		}
-// 		for _, staff := range s {
-// 			fmt.Fprintf(w, "%v\n", staff)
-// 		}
-
-// 	}
-// }
 
 func CreateStaff(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

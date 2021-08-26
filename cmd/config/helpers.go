@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -26,4 +27,25 @@ func (env *Env) ClientError(w http.ResponseWriter, status int) {
 // the user.
 func (env *Env) NotFound(w http.ResponseWriter) {
 	env.ClientError(w, http.StatusNotFound)
+}
+
+func (env *Env) Render(w http.ResponseWriter, r *http.Request, name string, td *TemplateData) {
+	// Retrieve the appropriate template set from the cache based on the page name
+	// (like 'home.page.tmpl'). If no entry exists in the cache with the
+	// provided name, call the serverError helper method that we made earlier.
+	ts, ok := env.TemplateCache[name]
+
+	if !ok {
+		env.ServerError(w, fmt.Errorf("the template %s does not exist", name))
+		return
+	}
+
+	// Initialize a new buffer.
+	buf := new(bytes.Buffer)
+	// Execute the template set, passing in any dynamic data.
+	err := ts.Execute(buf, td)
+	if err != nil {
+		env.ServerError(w, err)
+	}
+	buf.WriteTo(w)
 }
