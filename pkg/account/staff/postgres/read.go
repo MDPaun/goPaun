@@ -4,26 +4,35 @@ import (
 	// "database/sql"
 
 	"database/sql"
+	"errors"
 
-	"github.com/MDPaun/goPaun/pkg/account/staff/models"
+	models "github.com/MDPaun/goPaun/pkg/account/staff"
 )
 
 type StaffModel struct {
 	DB *sql.DB
 }
 
-func (m *StaffModel) Create(title, content, expires string) (int, error) {
-	return 0, nil
-}
-
 // This will return a specific staff member based on its id.
-func (m *StaffModel) Read(id int) (*models.Staff, error) {
-	return nil, nil
+func (m *StaffModel) FindByID(id int) (*models.Staff, error) {
+	stmt := "SELECT id, email, fullname, image, status, date_added FROM staff WHERE id = $1;"
+
+	row := m.DB.QueryRow(stmt, id)
+	s := &models.Staff{}
+	err := row.Scan(&s.ID, &s.Email, &s.FullName, &s.Image, &s.Status, &s.DateAdded)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	return s, nil
 }
 
 // This will return the 10 most recently created members.
 func (m *StaffModel) Latest() ([]*models.Staff, error) {
-	stmt := "SELECT id, email, fullname, image, status, date_added  FROM staff;"
+	stmt := "SELECT id, email, fullname, image, status, date_added  FROM staff LIMIT 10;"
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
 		return nil, err
@@ -44,8 +53,3 @@ func (m *StaffModel) Latest() ([]*models.Staff, error) {
 	}
 	return staff, nil
 }
-
-// // This will return the 10 most recently created members.
-// func Latest(env *handlers.Env) ([]*models.Staff, error) {
-// 	return nil, nil
-// }

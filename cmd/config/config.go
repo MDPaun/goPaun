@@ -3,7 +3,7 @@ package config
 import (
 	"log"
 
-	"github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
+	"github.com/MDPaun/goPaun/pkg/account/staff/postgres"
 )
 
 type Env struct {

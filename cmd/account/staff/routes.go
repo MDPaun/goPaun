@@ -8,7 +8,9 @@ import (
 
 func Routes(env *config.Env, mux *http.ServeMux) *http.ServeMux {
 
-	mux.HandleFunc("/read", read(env))
+	// mux.HandleFunc("/staff", readAll(env))
+	mux.HandleFunc("/staff", GetStaff(env))
+	mux.HandleFunc("/staff/create", CreateStaff(env))
 
 	return mux
 }

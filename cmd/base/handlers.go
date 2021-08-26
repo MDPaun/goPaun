@@ -11,8 +11,7 @@ import (
 func home(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			// env.notFound(w)
-			env.ErrorLog.Fatal()
+			env.NotFound(w) //! ATENTIE de verificat da eroare uneori
 			return
 		}
 
@@ -30,7 +29,7 @@ func home(env *config.Env) http.HandlerFunc {
 		}
 		err = ts.Execute(w, nil)
 		if err != nil {
-			// app.serverError(w, err)
+			env.ServerError(w, err)
 			return
 		}
 

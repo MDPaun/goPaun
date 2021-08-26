@@ -8,7 +8,7 @@ import (
 
 	// "github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
 	"github.com/MDPaun/goPaun/cmd/config"
-	"github.com/MDPaun/goPaun/pkg/account/staff/models/postgres"
+	"github.com/MDPaun/goPaun/pkg/account/staff/postgres"
 	psDB "github.com/MDPaun/goPaun/pkg/storage"
 )
 
