@@ -1,4 +1,4 @@
-package psDB
+package storage
 
 import (
 	"database/sql"

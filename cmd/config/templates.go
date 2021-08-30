@@ -6,6 +6,7 @@ import (
 	"time"
 
 	models "github.com/MDPaun/goPaun/pkg/account/staff"
+	modelsInv "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
 
 // Include a Staffs field in the templateData struct.
@@ -13,6 +14,8 @@ type TemplateData struct {
 	CurrentYear int
 	Staff       *models.Staff
 	Staffs      []*models.Staff
+	Inventory   *modelsInv.Inventory
+	Inventorys  []*modelsInv.Inventory
 }
 
 // Create a humanDate function which returns a nicely formatted string

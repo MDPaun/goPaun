@@ -9,7 +9,8 @@ import (
 	// base "github.com/MDPaun/goPaun/cmd/base"
 	"github.com/MDPaun/goPaun/cmd/config"
 	"github.com/MDPaun/goPaun/pkg/account/staff/postgres"
-	psDB "github.com/MDPaun/goPaun/pkg/storage"
+	storage "github.com/MDPaun/goPaun/pkg/storage"
+	"github.com/MDPaun/goPaun/pkg/store/inventory/mysqlDecoCraft"
 )
 
 func main() {
@@ -20,8 +21,11 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	db := psDB.ConnectDB()
+	db := storage.ConnectDB()
 	defer db.Close()
+
+	dbDC := storage.ConnectDecoCraft()
+	defer dbDC.Close()
 
 	// Initialize a new template cache...
 	templateCache, err := config.NewTemplateCache("./../ui/html/")
@@ -33,6 +37,7 @@ func main() {
 		ErrorLog:      errorLog,
 		InfoLog:       infoLog,
 		Staff:         &postgres.StaffModel{DB: db},
+		Inventory:     &mysqlDecoCraft.InventoryModel{DBDC: dbDC},
 		TemplateCache: templateCache,
 	}
 

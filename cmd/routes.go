@@ -5,7 +5,8 @@ import (
 
 	staff "github.com/MDPaun/goPaun/cmd/account/staff"
 	base "github.com/MDPaun/goPaun/cmd/base"
-	"github.com/MDPaun/goPaun/cmd/config"
+	config "github.com/MDPaun/goPaun/cmd/config"
+	inventory "github.com/MDPaun/goPaun/cmd/store/inventory"
 )
 
 func routes(env *config.Env) http.Handler {
@@ -14,9 +15,11 @@ func routes(env *config.Env) http.Handler {
 	// mux.HandleFunc("/", home(env))
 	base.Routes(env, mux)
 	staff.Routes(env, mux)
+	inventory.Routes(env, mux)
 
 	fileServer := http.FileServer(http.Dir("./../ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
+	// return mux
 	return recoverPanic(env, logRequest(env, secureHeaders(mux)))
 }
