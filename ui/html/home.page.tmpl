@@ -14,7 +14,7 @@
         {{range .Staffs}}
             <tr>
                 <td><a href='/staff?id={{.ID}}'>{{.FullName}}</a></td>
-                <td>{{.DateAdded}}</td>
+                <td>{{humanDate .DateAdded}}</td>
                 <td>#{{.ID}}</td>
             </tr>
         {{end}}

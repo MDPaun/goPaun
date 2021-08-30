@@ -8,7 +8,7 @@ import (
 	"github.com/MDPaun/goPaun/cmd/config"
 )
 
-func routes(env *config.Env) *http.ServeMux {
+func routes(env *config.Env) http.Handler {
 	mux := http.NewServeMux()
 
 	// mux.HandleFunc("/", home(env))
@@ -17,5 +17,6 @@ func routes(env *config.Env) *http.ServeMux {
 
 	fileServer := http.FileServer(http.Dir("./../ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-	return mux
+
+	return recoverPanic(env, logRequest(env, secureHeaders(mux)))
 }
