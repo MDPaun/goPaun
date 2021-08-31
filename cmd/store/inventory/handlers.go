@@ -52,7 +52,7 @@ func GetItems(env *config.Env) http.HandlerFunc {
 			// 	fmt.Fprintf(w, "%v\n", Inventory)
 			// }
 			type TemplateData = config.TemplateData
-			env.Render(w, r, "home1.page.tmpl", &TemplateData{
+			env.Render(w, r, "inventory.page.html", &TemplateData{
 				Inventorys: s,
 			})
 		}
@@ -66,13 +66,16 @@ func UpdateStock(env *config.Env) http.HandlerFunc {
 			log.Println("Not Allowed")
 			return
 		}
-		// Create some variables holding dummy data. We'll remove these later on
-		// during the build.
-		stock := 16
-		id := 100557
+		err := r.ParseForm()
+		if err != nil {
+			env.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		stock := r.PostForm.Get("stock")
+		id := r.PostForm.Get("ID")
 
 		// Pass the data to the InventoryModel.Create() method
-		err := env.Inventory.UpdateStock(id, stock)
+		err = env.Inventory.UpdateStock(id, stock)
 		if err != nil {
 			log.Fatal(err)
 			return

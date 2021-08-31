@@ -1,0 +1,54 @@
+{{template "base" .}}
+
+{{define "title"}}Admin{{end}}
+
+{{define "main"}}
+
+<adminhome>
+    <div class="table-container">
+        
+        {{if .Inventorys}}
+            <table>
+
+                <tr>
+                    <th style="width:10rem;">ID</th>
+                    <th style="width:10rem;">Image</th>
+                    <th style="width:25rem;">Name</th>
+                    <th style="width:10rem;">SKU</th>
+                    <th style="width:15rem;">EAN</th>
+                    <th style="width:10rem;">On hand</th>
+                    <th style="width:10rem;">Committed</th>
+                    <th style="width:10rem;">Available</th>
+                    <th style="width:10rem;">Action</th>
+
+                </tr>
+            {{range .Inventorys}}
+                <tr>
+                    <form action="/inventory/update" method="POST">
+                        <input type="hidden" name="ID" value="{{.ID}}" />
+
+                        <td>{{.ID}}</a></td>
+                        <td><img src="https://www.decocraft.ro/image/{{.Image}}" alt="{{.Name}}" width="50"></td>
+                        <td>{{.Name}}</td>
+                        <td>{{.SKU}}</td>
+                        <td>{{.EAN}}</td>
+                        <td><input  maxlength='10' name="stock" value="{{.Quantity}}"/></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td><input type="submit" value="Update" /></td>
+                    </form>
+                </tr>
+            {{end}}
+            </table>
+        {{else}}
+            <p>There's nothing to see here... yet!</p>
+        {{end}}
+    </div>
+
+</adminhome>
+
+{{end}}
+
+
+
+                     

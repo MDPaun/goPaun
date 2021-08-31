@@ -8,9 +8,6 @@ import (
 
 func home(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			env.NotFound(w)
-		}
 		if r.Method != http.MethodGet {
 			env.NotFound(w)
 			w.WriteHeader(405)
@@ -18,7 +15,7 @@ func home(env *config.Env) http.HandlerFunc {
 			return
 		}
 
-		s, err := env.Staff.Latest()
+		s, err := env.Inventory.Latest()
 		if err != nil {
 			env.ServerError(w, err)
 			return
@@ -27,29 +24,9 @@ func home(env *config.Env) http.HandlerFunc {
 		// 	fmt.Fprintf(w, "%v\n", staff)
 		// }
 		type TemplateData = config.TemplateData
-		env.Render(w, r, "home.page.tmpl", &TemplateData{
-			Staffs: s,
+		env.Render(w, r, "admin.page.html", &TemplateData{
+			Inventorys: s,
 		})
-
-		// type TemplateData = config.TemplateData //! de verificat daca functioneaza
-		// data := &TemplateData{Staffs: s}
-		// files := []string{
-		// 	"./../ui/html/home.page.tmpl",
-		// 	"./../ui/html/base.layout.tmpl",
-		// 	"./../ui/html/footer.partial.tmpl",
-		// }
-
-		// ts, err := template.ParseFiles(files...)
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// 	http.Error(w, "Internal Server Error", 500)
-		// 	return
-		// }
-		// err = ts.Execute(w, data)
-		// if err != nil {
-		// 	env.ServerError(w, err)
-		// 	return
-		// }
 
 	}
 }

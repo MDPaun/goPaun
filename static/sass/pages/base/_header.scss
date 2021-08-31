@@ -1,0 +1,225 @@
+@use '../../basic/' as *;
+
+.header {
+	&__mobile {
+		background-color: $primary;
+		padding: 0 1rem;
+		height: 6rem;
+
+		@include responsive(tab-port-min) {
+			display: none;
+		}
+		@include responsive(tab-port) {
+			display: flex;
+		}
+
+		&--toggle {
+			display: grid;
+			width: 100%;
+			grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+			grid-auto-rows: minmax(1fr, min-content);
+
+			z-index: 100;
+
+			&__logo {
+				justify-self: start;
+				align-self: center;
+				padding: 0.5rem;
+
+				img {
+					height: 5rem;
+					border-radius: 6rem;
+				}
+			}
+
+			&__icon {
+				display: flex;
+				justify-self: end;
+				align-self: center;
+
+				padding: 0 1rem;
+				font-size: font-size(font-size-regular);
+				padding-left: 3rem;
+				&--cart {
+					padding: 0 1.5rem;
+				}
+				&--menu {
+					padding: 0 1.5rem;
+					color: $on-primary;
+				}
+			}
+		}
+	}
+
+	&__topnav {
+		@include responsive(tab-port-min) {
+			display: flex;
+		}
+		@include responsive(tab-port) {
+			display: none;
+		}
+
+		height: 3rem;
+		background: $primary-d;
+
+		&--main {
+			display: grid;
+			width: 100%;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			grid-auto-rows: minmax(1fr, min-content);
+
+			&--left {
+				justify-self: start;
+				align-self: center;
+				padding: 0 3rem;
+			}
+			&--middle {
+				padding: 0 3rem;
+				justify-self: center;
+				align-self: center;
+			}
+			&--right {
+				padding: 0 3rem;
+				justify-self: end;
+				align-self: center;
+
+				ul {
+					display: flex;
+					font-size: font-size(font-size-smallest);
+					
+				}
+				li {
+					color: $on-primary;
+					padding: 0 1rem;
+					align-self: center;
+				}
+				a {
+					color: $on-primary;
+				}
+				svg {
+					color: $on-primary;
+					align-self: center;
+				}
+			}
+		}
+	}
+
+	&__midnav {
+		@include responsive(tab-port-min) {
+			display: flex;
+		}
+		@include responsive(tab-port) {
+			display: none;
+		}
+
+		height: 7rem;
+		background: $primary;
+
+		&--main {
+			display: grid;
+			width: 100%;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			grid-auto-rows: minmax(1fr, min-content);
+
+			&--left {
+				justify-self: start;
+				align-self: center;
+				padding: 0 3rem;
+
+				&__logo {
+					display: block;
+					img {
+						height: 12rem;
+						padding: 1rem;
+						top: 0.5rem;
+						position: absolute;
+						border-radius: 6rem;
+					}
+				}
+			}
+			&--middle {
+				padding: 0 3rem;
+				justify-self: safe center;
+				align-self: center;
+
+				ul {
+					display: flex;
+					font-size: font-size(font-size-smallest);
+				}
+				li {
+					color: $on-primary;
+					padding: 0 1rem;
+				}
+				a {
+					color: $on-primary;
+				}
+			}
+			&--right {
+				padding: 0 3rem;
+				justify-self: end;
+				align-self: center;
+				
+				ul {
+					display: flex;
+					font-size: font-size(font-size-small);
+				}
+				li {
+					color: $on-primary;
+					padding: 0 1rem;
+					// position: absolute;
+				}
+				a {
+					color: $on-primary;
+				}
+				// .icon {
+				// 	color: $on-primary;
+				// 	font-size: font-size(font-size-regular);
+				// 	margin: 0 0 0 3rem;
+				// }
+			}
+		}
+	}
+
+	&__footnav {
+		@include responsive(tab-port-min) {
+			display: flex;
+		}
+		@include responsive(tab-port) {
+			display: none;
+		}
+
+		height: 3rem;
+		background: $primary-d;
+
+		&--main {
+			display: grid;
+			width: 100%;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			grid-auto-rows: minmax(1fr, min-content);
+
+			// &--left {
+			// 	justify-self: start;
+			// 	align-self: center;
+			// 	padding: 0 3rem;
+			// }
+
+			&--middle {
+				padding: 0 3rem;
+				justify-self: center;
+				align-self: center;
+
+				ul {
+					display: flex;
+					font-size: font-size(font-size-smallest);
+				}
+				li {
+					color: $on-primary;
+					margin: 0 1rem;
+				}
+				a {
+					color: $on-primary;
+				}
+			}
+		}
+	}
+}

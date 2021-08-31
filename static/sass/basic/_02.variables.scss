@@ -1,0 +1,99 @@
+//*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* Colors *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+$primary: #018787;
+$primary-l: #4fb7b7;
+$primary-d: #00595a;
+$secondary: #ee6002;
+$secondary-l: #ff913e;
+$secondary-d: #b42e00;
+$background: #ffffff;
+$surface: #ffffff;
+$error: #b00020;
+$on-primary: #ffffff;
+$on-secondary: #000000;
+$on-background: #000000;
+$on-surface: #000000;
+$on-error: #ffffff;
+
+// $primary: #bb86fc;
+// $primary-l: #bb86fc;
+// $primary-d: #bb86fc;
+// $secondary: #03dac6;
+// $secondary-l: #03dac6;
+// $secondary-d: #03dac6;
+// $background: #121212;
+// $surface: #121212;
+// $error: #cf6679;
+// $on-primary: #ffffff;
+// $on-secondary: #ffffff;
+// $on-background: #ffffff;
+// $on-surface: #ffffff;
+// $on-error: #000000;
+
+
+//*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* Font Weights *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+$font-weights: (
+	'font-weight-thin': 100,
+	'font-weight-light': 300,
+	'font-weight-regular': 400,
+	'font-weight-medium': 500,
+	'font-weight-bold': 700,
+	'font-weight-black': 900,
+);
+
+@function font-weight($font-weight-style) {
+	@return map-get($font-weights, $font-weight-style);
+}
+
+//*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* Font Sizes *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+$font-sizes: (
+	'font-size-smallest': calc(1rem + 0.2vw),
+	'font-size-small': calc(1.2rem + 0.3vw),
+	'font-size-regular': calc(1.5rem + 1vw),
+	'font-size-medium': calc(1.5rem + 2vw),
+	'font-size-large': calc(1.5rem + 5vw),
+	'font-size-xlarge': calc(2.5rem + 5vw),
+);
+
+@function font-size($font-size-style) {
+	@return map-get($font-sizes, $font-size-style);
+}
+
+// $breakpoint-xs: 0;
+// $breakpoint-sm: 576px;
+// $breakpoint-md: 768px;
+// $breakpoint-lg: 992px;
+// $breakpoint-xl: 1200px;
+
+@mixin responsive($breakpoint) {
+	@if $breakpoint == phone {
+		@media only screen and (max-width: 600px) {
+			@content;
+		}
+	}
+	@if $breakpoint == tab-port {
+		@media only screen and (max-width: 900px) {
+			@content;
+		}
+	}
+	@if $breakpoint == tab-port-min {
+		@media only screen and (min-width: 900px) {
+			@content;
+		}
+	}
+	@if $breakpoint == tab-land {
+		@media only screen and (max-width: 1200px) {
+			@content;
+		}
+	}
+	@if $breakpoint == laptop {
+		@media only screen and (max-width: 1600px) {
+			@content;
+		}
+	}
+	@if $breakpoint == desktop {
+		@media only screen and (min-width: 1601px) {
+			@content;
+		}
+	}
+}

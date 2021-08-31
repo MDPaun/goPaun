@@ -1,0 +1,44 @@
+@use '../basic/02.variables' as *;
+
+:root {
+	font-size: 62.5%;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+	// line-height: 1.9;
+	background-color: $background;
+}
+
+li {
+	list-style: none;
+}
+
+a:link,
+a:visited {
+	text-decoration: none;
+	color: $on-primary;
+	font-weight: font-weight(font-weight-regular);
+	letter-spacing: 0.05rem;
+}
+
+i {
+	color: $on-surface;
+	font-size: font-size(font-size-small);
+}
+
+h1 {
+	font-size: font-size(font-size-medium);
+}
+
+h2 {
+	font-size: font-size(font-size-regular);
+}
+
+h3 {
+	font-size: font-size(font-size-small);
+}
+
+h4 {
+	font-size: font-size(font-size-smallest);
+}

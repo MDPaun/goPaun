@@ -28,7 +28,7 @@ func main() {
 	defer dbDC.Close()
 
 	// Initialize a new template cache...
-	templateCache, err := config.NewTemplateCache("./../ui/html/")
+	templateCache, err := config.NewTemplateCache("./../ui/admin/")
 	if err != nil {
 		errorLog.Fatal(err)
 	}

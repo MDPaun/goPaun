@@ -57,7 +57,7 @@ func (m *InventoryModel) Latest() ([]*models.Inventory, error) {
 	return inventory, nil
 }
 
-func (m *InventoryModel) UpdateStock(id, stock int) error {
+func (m *InventoryModel) UpdateStock(id, stock string) error {
 	fmt.Println(id, stock)
 	stmt := "UPDATE product SET product.quantity = ?  WHERE product_id = ?;"
 

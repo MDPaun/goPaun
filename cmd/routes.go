@@ -17,7 +17,7 @@ func routes(env *config.Env) http.Handler {
 	staff.Routes(env, mux)
 	inventory.Routes(env, mux)
 
-	fileServer := http.FileServer(http.Dir("./../ui/static/"))
+	fileServer := http.FileServer(http.Dir("./../static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	// return mux
