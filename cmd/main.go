@@ -11,6 +11,7 @@ import (
 	"github.com/MDPaun/goPaun/pkg/account/staff/postgres"
 	storage "github.com/MDPaun/goPaun/pkg/storage"
 	"github.com/MDPaun/goPaun/pkg/store/inventory/mysqlDecoCraft"
+	inventory "github.com/MDPaun/goPaun/pkg/store/inventory/postgres"
 )
 
 func main() {
@@ -37,7 +38,8 @@ func main() {
 		ErrorLog:      errorLog,
 		InfoLog:       infoLog,
 		Staff:         &postgres.StaffModel{DB: db},
-		Inventory:     &mysqlDecoCraft.InventoryModel{DBDC: dbDC},
+		Inventory:     &inventory.InventoryModel{DB: db},
+		InventoryDC:   &mysqlDecoCraft.InventoryModel{DBDC: dbDC},
 		TemplateCache: templateCache,
 	}
 

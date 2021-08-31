@@ -6,10 +6,19 @@
 
 <adminhome>
     <div class="table-container">
-        
-        {{if .Inventorys}}
-            <table>
 
+        {{if .Inventorys}}
+
+
+
+            <table>
+                <tr>
+                    <th style="width:50%%;">
+                    <form action="/inventory/getfromdecocraft/">
+                        <input type="submit" value="DecoCraft" />
+                    </form></th>
+                    <th style="width:50%%;"><button type="submit" action="/inventory/getfromdecocraft/">Mercerie</button></th>
+                <tr>
                 <tr>
                     <th style="width:10rem;">ID</th>
                     <th style="width:10rem;">Image</th>
@@ -25,7 +34,7 @@
             {{range .Inventorys}}
                 <tr>
                     <form action="/inventory/update" method="POST">
-                        <input type="hidden" name="ID" value="{{.ID}}" />
+                        <input type="hidden" name="sku" value="{{.SKU}}" />
 
                         <td>{{.ID}}</a></td>
                         <td><img src="https://www.decocraft.ro/image/{{.Image}}" alt="{{.Name}}" width="50"></td>

@@ -3,7 +3,6 @@ package mysqlDecoCraft
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	models "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
@@ -19,7 +18,7 @@ func (m *InventoryModel) FindByID(id int) (*models.Inventory, error) {
 
 	row := m.DBDC.QueryRow(stmt, id)
 	s := &models.Inventory{}
-	err := row.Scan(&s.ID, &s.Model, &s.SKU, &s.EAN, &s.Quantity)
+	err := row.Scan(&s.ID, &s.SKU, &s.EAN, &s.Quantity)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -31,8 +30,8 @@ func (m *InventoryModel) FindByID(id int) (*models.Inventory, error) {
 }
 
 // This will return the 10 most recently created members.
-func (m *InventoryModel) Latest() ([]*models.Inventory, error) {
-	stmt := `SELECT product.product_id, product.model, product.sku, product.ean, product.image, product.quantity, product_description.name
+func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
+	stmt := `SELECT product.product_id, product.sku, product.ean, product.image, product.quantity, product_description.name
 				FROM product
 				INNER JOIN product_description ON product.product_id = product_description.product_id
 				WHERE 1 LIMIT 10`
@@ -45,7 +44,7 @@ func (m *InventoryModel) Latest() ([]*models.Inventory, error) {
 
 	for rows.Next() {
 		s := &models.Inventory{}
-		err = rows.Scan(&s.ID, &s.Model, &s.SKU, &s.EAN, &s.Image, &s.Quantity, &s.Name)
+		err = rows.Scan(&s.ID, &s.SKU, &s.EAN, &s.Image, &s.Quantity, &s.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -57,11 +56,11 @@ func (m *InventoryModel) Latest() ([]*models.Inventory, error) {
 	return inventory, nil
 }
 
-func (m *InventoryModel) UpdateStock(id, stock string) error {
-	fmt.Println(id, stock)
-	stmt := "UPDATE product SET product.quantity = ?  WHERE product_id = ?;"
+func (m *InventoryModel) UpdateStockDecoCraft(sku, stock string) error {
+	// fmt.Println(id, stock)
+	stmt := "UPDATE product SET product.quantity = ?  WHERE sku = ?;"
 
-	_, err := m.DBDC.Exec(stmt, stock, id)
+	_, err := m.DBDC.Exec(stmt, stock, sku)
 	if err != nil {
 		return err
 	}

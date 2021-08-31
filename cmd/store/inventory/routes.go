@@ -8,8 +8,8 @@ import (
 
 func Routes(env *config.Env, mux *http.ServeMux) *http.ServeMux {
 
-	// mux.HandleFunc("/staff", readAll(env))
-	mux.HandleFunc("/inventory", GetItems(env))
+	mux.HandleFunc("/inventory", GetProducts(env))
+	mux.HandleFunc("/inventory/getfromdecocraft/", GetFromDecoCraft(env))
 	mux.HandleFunc("/inventory/update", UpdateStock(env))
 
 	return mux

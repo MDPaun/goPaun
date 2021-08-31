@@ -11,7 +11,39 @@ import (
 	models "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
 
-func GetItems(env *config.Env) http.HandlerFunc {
+func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s, err := env.InventoryDC.GetProducts()
+		if err != nil {
+			env.ServerError(w, err)
+			return
+		}
+		for _, inventory := range s {
+			_, err := env.Inventory.GetBySKU(inventory.SKU)
+			if err != nil {
+				image := inventory.Image
+				name := inventory.Name
+				sku := inventory.SKU
+				ean := inventory.EAN
+				quantity := inventory.Quantity
+
+				err = env.Inventory.AddProduct(image, name, sku, ean, quantity)
+				if err != nil {
+					log.Fatal(err)
+					return
+				}
+
+			} else {
+				fmt.Println("Product SKU:", inventory.SKU, "already exist")
+			}
+		}
+
+		http.Redirect(w, r, fmt.Sprintln("/inventory"), http.StatusSeeOther)
+
+	}
+}
+
+func GetProducts(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if id != 0 {
@@ -20,7 +52,7 @@ func GetItems(env *config.Env) http.HandlerFunc {
 				return
 			}
 			log.Println(id)
-			s, err := env.Inventory.FindByID(id)
+			s, err := env.Inventory.GetByID(id)
 			if err != nil {
 				if errors.Is(err, models.ErrNoRecord) {
 					env.NotFound(w)
@@ -72,10 +104,10 @@ func UpdateStock(env *config.Env) http.HandlerFunc {
 			return
 		}
 		stock := r.PostForm.Get("stock")
-		id := r.PostForm.Get("ID")
+		sku := r.PostForm.Get("sku")
 
 		// Pass the data to the InventoryModel.Create() method
-		err = env.Inventory.UpdateStock(id, stock)
+		err = env.Inventory.UpdateStock(sku, stock)
 		if err != nil {
 			log.Fatal(err)
 			return
