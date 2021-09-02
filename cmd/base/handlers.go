@@ -14,8 +14,12 @@ func home(env *config.Env) http.HandlerFunc {
 			w.Write([]byte("Method Not Allowed"))
 			return
 		}
+		if r.URL.Path != "/" {
+			env.NotFound(w)
+			return
+		}
 
-		s, err := env.Inventory.Latest()
+		s, err := env.Inventory.Latest("1")
 		if err != nil {
 			env.ServerError(w, err)
 			return

@@ -301,3 +301,28 @@ footer span {
 .table-container table tr:nth-child(2n) {
   background-color: #ff913e;
 }
+
+.center-container {
+  text-align: center;
+  padding: 2rem 0 0 0;
+}
+.center-container__pagination {
+  display: inline-block;
+}
+.center-container__pagination a {
+  color: #000000;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  border: 1px solid #ee6002;
+  margin: 0 4px;
+}
+.center-container__pagination a.active {
+  background-color: #018787;
+  color: #ffffff;
+  border: 1px solid #00595a;
+}
+.center-container__pagination a:hover:not(.active) {
+  background-color: #4fb7b7;
+}

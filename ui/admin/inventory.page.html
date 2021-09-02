@@ -1,63 +1,88 @@
-{{template "base" .}}
-
-{{define "title"}}Admin{{end}}
-
-{{define "main"}}
+{{template "base" .}} {{define "title"}}Admin{{end}} {{define "main"}}
 
 <adminhome>
-    <div class="table-container">
+	<div class="center-container">
+		<div class="center-container__pagination">
+			<a href="#">&laquo;</a>
+			<a href="#">1</a>
+			<a href="#" class="active">2</a>
+			<a href="#">3</a>
+			<a href="#">4</a>
+			<a href="#">5</a>
+			<a href="#">6</a>
+			<a href="#">&raquo;</a>
+		</div>
+	</div>
+	<div class="table-container">
+		{{if .Inventorys}}
 
-        {{if .Inventorys}}
+		<table>
+			<tr>
+				<th>
+					<form action="/inventory/getfromdecocraft/">
+						<input type="submit" value="DecoCraft" />
+					</form>
+				</th>
+				<th>
+					<form action="/inventory/getfromdecocraft/">
+						<input type="submit" value="Mercerie" />
+					</form>
+				</th>
+			</tr>
 
+			<tr></tr>
+			<tr>
+				<th style="width: 10rem">ID</th>
+				<th style="width: 10rem">Image</th>
+				<th style="width: 25rem">Name</th>
+				<th style="width: 10rem">SKU</th>
+				<th style="width: 15rem">EAN</th>
+				<th style="width: 10rem">On hand</th>
+				<th style="width: 10rem">Committed</th>
+				<th style="width: 10rem">Available</th>
+				<th style="width: 10rem">Action</th>
+			</tr>
+			{{range .Inventorys}}
+			<tr>
+				<form action="/inventory/update" method="POST">
+					<input type="hidden" name="sku" value="{{.SKU}}" />
 
+					<td>{{.ID}}</td>
+					<td>
+						<img
+							src="https://www.decocraft.ro/image/{{.Image}}"
+							alt="{{.Name}}"
+							width="50"
+						/>
+					</td>
+					<td>{{.Name}}</td>
+					<td>{{.SKU}}</td>
+					<td>{{.EAN}}</td>
+					<td><input maxlength="10" name="stock" value="{{.Quantity}}" /></td>
+					<td>0</td>
+					<td>0</td>
+					<td><input type="submit" value="Update" /></td>
+				</form>
+			</tr>
+			{{end}}
+		</table>
 
-            <table>
-                <tr>
-                    <th style="width:50%%;">
-                    <form action="/inventory/getfromdecocraft/">
-                        <input type="submit" value="DecoCraft" />
-                    </form></th>
-                    <th style="width:50%%;"><button type="submit" action="/inventory/getfromdecocraft/">Mercerie</button></th>
-                <tr>
-                <tr>
-                    <th style="width:10rem;">ID</th>
-                    <th style="width:10rem;">Image</th>
-                    <th style="width:25rem;">Name</th>
-                    <th style="width:10rem;">SKU</th>
-                    <th style="width:15rem;">EAN</th>
-                    <th style="width:10rem;">On hand</th>
-                    <th style="width:10rem;">Committed</th>
-                    <th style="width:10rem;">Available</th>
-                    <th style="width:10rem;">Action</th>
-
-                </tr>
-            {{range .Inventorys}}
-                <tr>
-                    <form action="/inventory/update" method="POST">
-                        <input type="hidden" name="sku" value="{{.SKU}}" />
-
-                        <td>{{.ID}}</a></td>
-                        <td><img src="https://www.decocraft.ro/image/{{.Image}}" alt="{{.Name}}" width="50"></td>
-                        <td>{{.Name}}</td>
-                        <td>{{.SKU}}</td>
-                        <td>{{.EAN}}</td>
-                        <td><input  maxlength='10' name="stock" value="{{.Quantity}}"/></td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td><input type="submit" value="Update" /></td>
-                    </form>
-                </tr>
-            {{end}}
-            </table>
-        {{else}}
-            <p>There's nothing to see here... yet!</p>
-        {{end}}
-    </div>
-
+		{{else}}
+		<p>There's nothing to see here... yet!</p>
+		<tr>
+			<th>
+				<form action="/inventory/getfromdecocraft/">
+					<input type="submit" value="DecoCraft" />
+				</form>
+			</th>
+			<th>
+				<form action="/inventory/getfromdecocraft/">
+					<input type="submit" value="Mercerie" />
+				</form>
+			</th>
+		</tr>
+		{{end}}
+	</div>
 </adminhome>
 
 {{end}}
-
-
-
-                     

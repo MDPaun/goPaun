@@ -34,7 +34,7 @@ func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
 	stmt := `SELECT product.product_id, product.sku, product.ean, product.image, product.quantity, product_description.name
 				FROM product
 				INNER JOIN product_description ON product.product_id = product_description.product_id
-				WHERE 1 LIMIT 10`
+				LIMIT 100`
 	rows, err := m.DBDC.Query(stmt)
 	if err != nil {
 		return nil, err
@@ -56,11 +56,11 @@ func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
 	return inventory, nil
 }
 
-func (m *InventoryModel) UpdateStockDecoCraft(sku, stock string) error {
+func (m *InventoryModel) UpdateStockDecoCraft(sku, quantity string) error {
 	// fmt.Println(id, stock)
 	stmt := "UPDATE product SET product.quantity = ?  WHERE sku = ?;"
 
-	_, err := m.DBDC.Exec(stmt, stock, sku)
+	_, err := m.DBDC.Exec(stmt, quantity, sku)
 	if err != nil {
 		return err
 	}

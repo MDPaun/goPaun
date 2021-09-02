@@ -1,14 +1,11 @@
 package inventory
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/MDPaun/goPaun/cmd/config"
-	models "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
 
 func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
@@ -18,6 +15,7 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 			env.ServerError(w, err)
 			return
 		}
+
 		for _, inventory := range s {
 			_, err := env.Inventory.GetBySKU(inventory.SKU)
 			if err != nil {
@@ -45,49 +43,59 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 
 func GetProducts(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(r.URL.Query().Get("id"))
-		if id != 0 {
-			if err != nil || id < 1 {
-				env.NotFound(w)
-				return
-			}
-			log.Println(id)
-			s, err := env.Inventory.GetByID(id)
-			if err != nil {
-				if errors.Is(err, models.ErrNoRecord) {
-					env.NotFound(w)
-				} else {
-					env.ServerError(w, err)
-				}
-				return
-			}
-			// Use the new render helper.
-			type TemplateData = config.TemplateData
-			env.Render(w, r, "show.page.tmpl", &TemplateData{
-				Inventory: s,
-			})
+		// id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		// if id != 0 {
+		// 	if err != nil || id < 1 {
+		// 		env.NotFound(w)
+		// 		return
+		// 	}
+		// 	log.Println(id)
+		// 	s, err := env.Inventory.GetByID(id)
+		// 	if err != nil {
+		// 		if errors.Is(err, models.ErrNoRecord) {
+		// 			env.NotFound(w)
+		// 		} else {
+		// 			env.ServerError(w, err)
+		// 		}
+		// 		return
+		// 	}
+		// 	// Use the new render helper.
+		// 	type TemplateData = config.TemplateData
+		// 	env.Render(w, r, "show.page.tmpl", &TemplateData{
+		// 		Inventory: s,
+		// 	})
 
-		} else {
-			if r.Method != http.MethodGet {
-				env.NotFound(w)
-				w.WriteHeader(405)
-				w.Write([]byte("Method Not Allowed"))
-				return
-			}
-
-			s, err := env.Inventory.Latest()
-			if err != nil {
-				env.ServerError(w, err)
-				return
-			}
-			// for _, Inventory := range s {
-			// 	fmt.Fprintf(w, "%v\n", Inventory)
-			// }
-			type TemplateData = config.TemplateData
-			env.Render(w, r, "inventory.page.html", &TemplateData{
-				Inventorys: s,
-			})
+		// } else {
+		env.Inventory.CountProduct()
+		page := r.URL.Query().Get("page")
+		// if err != nil {
+		// 	env.NotFound(w)
+		// 	return
+		// }
+		if r.Method != http.MethodGet {
+			env.NotFound(w)
+			w.WriteHeader(405)
+			w.Write([]byte("Method Not Allowed"))
+			return
 		}
+
+		if page == "" {
+			page = "1"
+		}
+
+		s, err := env.Inventory.Latest(page)
+		if err != nil {
+			env.ServerError(w, err)
+			return
+		}
+		// for _, Inventory := range s {
+		// 	fmt.Fprintf(w, "%v\n", Inventory)
+		// }
+		type TemplateData = config.TemplateData
+		env.Render(w, r, "inventory.page.html", &TemplateData{
+			Inventorys: s,
+		})
+		// }
 	}
 }
 
@@ -103,11 +111,16 @@ func UpdateStock(env *config.Env) http.HandlerFunc {
 			env.ClientError(w, http.StatusBadRequest)
 			return
 		}
-		stock := r.PostForm.Get("stock")
+		quantity := r.PostForm.Get("stock")
 		sku := r.PostForm.Get("sku")
 
 		// Pass the data to the InventoryModel.Create() method
-		err = env.Inventory.UpdateStock(sku, stock)
+		err = env.Inventory.UpdateStock(sku, quantity)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		err = env.InventoryDC.UpdateStockDecoCraft(sku, quantity)
 		if err != nil {
 			log.Fatal(err)
 			return

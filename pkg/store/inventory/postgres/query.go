@@ -3,6 +3,8 @@ package inventory
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"strconv"
 
 	models "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
@@ -47,9 +49,11 @@ func (m *InventoryModel) GetByID(id int) (*models.Inventory, error) {
 }
 
 // This will return the 10 most recently created members.
-func (m *InventoryModel) Latest() ([]*models.Inventory, error) {
-	stmt := "SELECT id, image, name, sku, ean, quantity FROM products ORDER BY id ASC LIMIT 10;"
-	rows, err := m.DB.Query(stmt)
+func (m *InventoryModel) Latest(page string) ([]*models.Inventory, error) {
+	stmt := "SELECT id, image, name, sku, ean, quantity FROM products ORDER BY id ASC LIMIT $1 OFFSET $2;"
+	limit := 10
+	x, _ := strconv.Atoi(page)
+	rows, err := m.DB.Query(stmt, limit, (x-1)*limit)
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +86,27 @@ func (m *InventoryModel) AddProduct(image, name, sku, ean string, quantity int) 
 	return nil
 }
 
+func (m *InventoryModel) UpdateStock(sku, quantity string) error {
+
+	stmt := "UPDATE products SET quantity = $1  WHERE sku = $2;"
+
+	_, err := m.DB.Exec(stmt, quantity, sku)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *InventoryModel) CountProduct() {
+
+	stmt := "select count (*) from products"
+	// var s int64
+	row, _ := m.DB.Query(stmt)
+	fmt.Println(row)
+
+}
+
 // func (m *InventoryModel) UpdateStock() ([]*models.Inventory, error) {
 // 	stmt := "SELECT id, image, name, sku, ean, quantity FROM products LIMIT 10;"
 // 	rows, err := m.DB.Query(stmt)
@@ -104,15 +129,3 @@ func (m *InventoryModel) AddProduct(image, name, sku, ean string, quantity int) 
 // 	}
 // 	return inventory, nil
 // }
-
-func (m *InventoryModel) UpdateStock(sku, quantity string) error {
-
-	stmt := "UPDATE products SET quantity = $1  WHERE sku = $2;"
-
-	_, err := m.DB.Exec(stmt, quantity, sku)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

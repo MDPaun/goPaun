@@ -1,0 +1,27 @@
+@use '../../basic/' as *;
+
+.center-container {
+	text-align: center;
+	padding: 2rem 0 0 0;
+
+	&__pagination {
+		display: inline-block;
+		a {
+			color: $on-background;
+			float: left;
+			padding: 8px 16px;
+			text-decoration: none;
+			transition: background-color 0.3s;
+			border: 1px solid $secondary;
+			margin: 0 4px;
+			&.active {
+				background-color: $primary;
+				color: $on-primary;
+				border: 1px solid $primary-d;
+			}
+			&:hover:not(.active) {
+				background-color: $primary-l;
+			}
+		}
+	}
+}
