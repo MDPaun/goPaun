@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strconv"
 
 	models "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
@@ -49,11 +48,11 @@ func (m *InventoryModel) GetByID(id int) (*models.Inventory, error) {
 }
 
 // This will return the 10 most recently created members.
-func (m *InventoryModel) Latest(page string) ([]*models.Inventory, error) {
+func (m *InventoryModel) Latest(page int) ([]*models.Inventory, error) {
 	stmt := "SELECT id, image, name, sku, ean, quantity FROM products ORDER BY id ASC LIMIT $1 OFFSET $2;"
-	limit := 10
-	x, _ := strconv.Atoi(page)
-	rows, err := m.DB.Query(stmt, limit, (x-1)*limit)
+	DefaultLimit := 10
+
+	rows, err := m.DB.Query(stmt, DefaultLimit, (page-1)*DefaultLimit)
 	if err != nil {
 		return nil, err
 	}

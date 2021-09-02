@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/MDPaun/goPaun/cmd/config"
 )
@@ -41,37 +42,27 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 	}
 }
 
+type FetchParam struct {
+	PageNumber uint64
+}
+
 func GetProducts(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// id, err := strconv.Atoi(r.URL.Query().Get("id"))
-		// if id != 0 {
-		// 	if err != nil || id < 1 {
-		// 		env.NotFound(w)
-		// 		return
-		// 	}
-		// 	log.Println(id)
-		// 	s, err := env.Inventory.GetByID(id)
-		// 	if err != nil {
-		// 		if errors.Is(err, models.ErrNoRecord) {
-		// 			env.NotFound(w)
-		// 		} else {
-		// 			env.ServerError(w, err)
-		// 		}
-		// 		return
-		// 	}
-		// 	// Use the new render helper.
-		// 	type TemplateData = config.TemplateData
-		// 	env.Render(w, r, "show.page.tmpl", &TemplateData{
-		// 		Inventory: s,
-		// 	})
+		pageStr := r.URL.Query().Get("page")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			env.NotFound(w)
+			return
+		}
+		fetchParam := FetchParam{
+			PageNumber: uint64(page),
+		}
 
-		// } else {
+		if pageStr == "" {
+			fetchParam.PageNumber = 1
+		}
 		env.Inventory.CountProduct()
-		page := r.URL.Query().Get("page")
-		// if err != nil {
-		// 	env.NotFound(w)
-		// 	return
-		// }
+
 		if r.Method != http.MethodGet {
 			env.NotFound(w)
 			w.WriteHeader(405)
@@ -79,9 +70,9 @@ func GetProducts(env *config.Env) http.HandlerFunc {
 			return
 		}
 
-		if page == "" {
-			page = "1"
-		}
+		// if page == "" {
+		// 	page = "1"
+		// }
 
 		s, err := env.Inventory.Latest(page)
 		if err != nil {
