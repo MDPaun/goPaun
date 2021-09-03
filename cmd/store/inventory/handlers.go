@@ -42,26 +42,38 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 	}
 }
 
-type FetchParam struct {
-	PageNumber uint64
-}
+// type FetchParam struct {
+// 	PageNumber uint64
+// }
 
 func GetProducts(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		pageStr := r.URL.Query().Get("page")
+		defaultLimitStr := r.URL.Query().Get("defaultLimit")
 		page, err := strconv.Atoi(pageStr)
-		if err != nil {
+		if err != nil && pageStr != "" {
 			env.NotFound(w)
 			return
 		}
-		fetchParam := FetchParam{
-			PageNumber: uint64(page),
+		if pageStr == "" {
+			page = 1
 		}
 
-		if pageStr == "" {
-			fetchParam.PageNumber = 1
+		defaultLimit, err := strconv.Atoi(defaultLimitStr)
+		if err != nil && defaultLimitStr != "" {
+			env.NotFound(w)
+			return
 		}
-		env.Inventory.CountProduct()
+		if defaultLimitStr == "" {
+			defaultLimit = 1
+		}
+
+		ts := env.Inventory.CountProduct()
+
+		sortName := r.URL.Query().Get("sortName")
+		sortSKU := r.URL.Query().Get("sortSKU")
+		sortEAN := r.URL.Query().Get("sortEAN")
+		sortOnHand := r.URL.Query().Get("sortOnHand")
 
 		if r.Method != http.MethodGet {
 			env.NotFound(w)
@@ -70,21 +82,17 @@ func GetProducts(env *config.Env) http.HandlerFunc {
 			return
 		}
 
-		// if page == "" {
-		// 	page = "1"
-		// }
-
-		s, err := env.Inventory.Latest(page)
+		s, err := env.Inventory.Latest(page, defaultLimit, sortName, sortSKU, sortEAN, sortOnHand)
 		if err != nil {
 			env.ServerError(w, err)
 			return
 		}
-		// for _, Inventory := range s {
-		// 	fmt.Fprintf(w, "%v\n", Inventory)
-		// }
+
+		fp := env.FilterProducts{}
+
 		type TemplateData = config.TemplateData
 		env.Render(w, r, "inventory.page.html", &TemplateData{
-			Inventorys: s,
+			Inventorys: s, FilterProducts: fp,
 		})
 		// }
 	}
