@@ -3,7 +3,7 @@ package inventory
 import (
 	"database/sql"
 	"errors"
-	"fmt"
+	"log"
 
 	models "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
@@ -48,11 +48,19 @@ func (m *InventoryModel) GetByID(id int) (*models.Inventory, error) {
 }
 
 // This will return the 10 most recently created members.
-func (m *InventoryModel) Latest(page int) ([]*models.Inventory, error) {
-	stmt := "SELECT id, image, name, sku, ean, quantity FROM products ORDER BY id ASC LIMIT $1 OFFSET $2;"
-	DefaultLimit := 10
+func (m *InventoryModel) Latest(page, defaultLimit int, sortName, sortSKU, sortEAN, sortOnHand string) ([]*models.Inventory, error) {
 
-	rows, err := m.DB.Query(stmt, DefaultLimit, (page-1)*DefaultLimit)
+	stmt := `SELECT id, image, name, sku, ean, quantity, price FROM products
+				WHERE
+					name ILIKE '%'||$1||'%' AND
+					sku ILIKE '%'||$2||'%' AND
+					ean ILIKE '%'||$3||'%' AND
+					quantity::text ILIKE '%'||$4||'%'
+				ORDER BY id ASC  LIMIT $5 OFFSET $6;`
+
+	rows, err := m.DB.Query(stmt, sortName, sortSKU, sortEAN, sortOnHand, defaultLimit, (page-1)*defaultLimit)
+	// rows, err := m.DB.Query(stmt, sortName, (page-1)*defaultLimit)
+
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +69,7 @@ func (m *InventoryModel) Latest(page int) ([]*models.Inventory, error) {
 
 	for rows.Next() {
 		s := &models.Inventory{}
-		err = rows.Scan(&s.ID, &s.Image, &s.Name, &s.SKU, &s.EAN, &s.Quantity)
+		err = rows.Scan(&s.ID, &s.Image, &s.Name, &s.SKU, &s.EAN, &s.Quantity, &s.Price)
 		if err != nil {
 			return nil, err
 		}
@@ -73,11 +81,11 @@ func (m *InventoryModel) Latest(page int) ([]*models.Inventory, error) {
 	return inventory, nil
 }
 
-func (m *InventoryModel) AddProduct(image, name, sku, ean string, quantity int) error {
+func (m *InventoryModel) AddProduct(image, name, sku, ean string, quantity int, price float64) error {
 	// fmt.Println(id, stock)
-	stmt := "INSERT INTO products (image, name, sku, ean, quantity) VALUES($1, $2, $3, $4, $5)"
+	stmt := "INSERT INTO products (image, name, sku, ean, quantity, price) VALUES($1, $2, $3, $4, $5, $6)"
 
-	_, err := m.DB.Exec(stmt, image, name, sku, ean, quantity)
+	_, err := m.DB.Exec(stmt, image, name, sku, ean, quantity, price)
 	if err != nil {
 		return err
 	}
@@ -85,11 +93,11 @@ func (m *InventoryModel) AddProduct(image, name, sku, ean string, quantity int) 
 	return nil
 }
 
-func (m *InventoryModel) UpdateStock(sku, quantity string) error {
+func (m *InventoryModel) UpdateStock(sku, quantity string, price float64) error {
 
-	stmt := "UPDATE products SET quantity = $1  WHERE sku = $2;"
+	stmt := "UPDATE products SET quantity = $1, price = $2  WHERE sku = $3;"
 
-	_, err := m.DB.Exec(stmt, quantity, sku)
+	_, err := m.DB.Exec(stmt, quantity, price, sku)
 	if err != nil {
 		return err
 	}
@@ -97,13 +105,22 @@ func (m *InventoryModel) UpdateStock(sku, quantity string) error {
 	return nil
 }
 
-func (m *InventoryModel) CountProduct() {
+func (m *InventoryModel) CountProduct() (total int) {
+	var count int
+	// stmt := "SELECT COUNT (*) as count from products"
+	stmt, err := m.DB.Prepare("SELECT COUNT(*) as count FROM products")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	stmt := "select count (*) from products"
-	// var s int64
-	row, _ := m.DB.Query(stmt)
-	fmt.Println(row)
-
+	// m.DB.QueryRow(stmt).Scan(&count)
+	err = stmt.QueryRow().Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// fmt.Println(count)
+	stmt.Close()
+	return count
 }
 
 // func (m *InventoryModel) UpdateStock() ([]*models.Inventory, error) {

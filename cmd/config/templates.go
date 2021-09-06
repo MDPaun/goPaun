@@ -11,11 +11,12 @@ import (
 
 // Include a Staffs field in the templateData struct.
 type TemplateData struct {
-	CurrentYear int
-	Staff       *models.Staff
-	Staffs      []*models.Staff
-	Inventory   *modelsInv.Inventory
-	Inventorys  []*modelsInv.Inventory
+	CurrentYear    int
+	Staff          *models.Staff
+	Staffs         []*models.Staff
+	Inventory      *modelsInv.Inventory
+	Inventorys     []*modelsInv.Inventory
+	FilterProducts *modelsInv.FilterProducts
 }
 
 // Create a humanDate function which returns a nicely formatted string

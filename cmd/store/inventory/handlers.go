@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/MDPaun/goPaun/cmd/config"
+	modelsInv "github.com/MDPaun/goPaun/pkg/store/inventory"
 )
 
 func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
@@ -25,8 +26,9 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 				sku := inventory.SKU
 				ean := inventory.EAN
 				quantity := inventory.Quantity
+				price := inventory.Price
 
-				err = env.Inventory.AddProduct(image, name, sku, ean, quantity)
+				err = env.Inventory.AddProduct(image, name, sku, ean, quantity, price)
 				if err != nil {
 					log.Fatal(err)
 					return
@@ -41,10 +43,6 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 
 	}
 }
-
-// type FetchParam struct {
-// 	PageNumber uint64
-// }
 
 func GetProducts(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -65,10 +63,10 @@ func GetProducts(env *config.Env) http.HandlerFunc {
 			return
 		}
 		if defaultLimitStr == "" {
-			defaultLimit = 1
+			defaultLimit = 10
 		}
 
-		ts := env.Inventory.CountProduct()
+		// ts := env.Inventory.CountProduct()
 
 		sortName := r.URL.Query().Get("sortName")
 		sortSKU := r.URL.Query().Get("sortSKU")
@@ -88,11 +86,12 @@ func GetProducts(env *config.Env) http.HandlerFunc {
 			return
 		}
 
-		fp := env.FilterProducts{}
+		fp := modelsInv.FilterProducts{PageNo: page, PageLimit: defaultLimit, SortName: sortName, SortSKU: sortSKU, SortEAN: sortEAN, SortOnHand: sortOnHand}
+		// fp = append(fp, &modelsInv.FilterProducts{PageNo: page, PageLimit: defaultLimit, SortName: sortName, SortSKU: sortSKU, SortEAN: sortEAN, SortOnHand: sortOnHand})
 
 		type TemplateData = config.TemplateData
 		env.Render(w, r, "inventory.page.html", &TemplateData{
-			Inventorys: s, FilterProducts: fp,
+			Inventorys: s, FilterProducts: &fp,
 		})
 		// }
 	}
@@ -112,14 +111,23 @@ func UpdateStock(env *config.Env) http.HandlerFunc {
 		}
 		quantity := r.PostForm.Get("stock")
 		sku := r.PostForm.Get("sku")
+		priceStr := r.PostForm.Get("price")
+		price, err := strconv.ParseFloat(priceStr, 64)
+		if err != nil && priceStr != "" {
+			env.NotFound(w)
+			return
+		}
+		if priceStr == "" {
+			price = 0.00
+		}
 
 		// Pass the data to the InventoryModel.Create() method
-		err = env.Inventory.UpdateStock(sku, quantity)
+		err = env.Inventory.UpdateStock(sku, quantity, price)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
-		err = env.InventoryDC.UpdateStockDecoCraft(sku, quantity)
+		err = env.InventoryDC.UpdateStockDecoCraft(sku, quantity, price)
 		if err != nil {
 			log.Fatal(err)
 			return

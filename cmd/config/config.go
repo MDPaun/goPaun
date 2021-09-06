@@ -13,8 +13,9 @@ type Env struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
 
-	Staff       *postgres.StaffModel
-	Inventory   *inventory.InventoryModel
+	Staff     *postgres.StaffModel
+	Inventory *inventory.InventoryModel
+	// FilterProducts *fp.FilterProducts
 	InventoryDC *mysqlDecoCraft.InventoryModel
 
 	TemplateCache map[string]*template.Template

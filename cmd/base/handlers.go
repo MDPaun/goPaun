@@ -19,7 +19,7 @@ func home(env *config.Env) http.HandlerFunc {
 			return
 		}
 
-		s, err := env.Inventory.Latest("1")
+		s, err := env.Inventory.Latest(1, 10, "", "", "", "")
 		if err != nil {
 			env.ServerError(w, err)
 			return

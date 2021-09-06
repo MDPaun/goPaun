@@ -4,6 +4,7 @@
 	<div class="center-container">
 		<div class="center-container__pagination">
 			<a href="#">&laquo;</a>
+
 			<a href="#">1</a>
 			<a href="#" class="active">2</a>
 			<a href="#">3</a>
@@ -14,8 +15,6 @@
 		</div>
 	</div>
 	<div class="table-container">
-		{{if .Inventorys}}
-
 		<table>
 			<tr>
 				<th>
@@ -30,19 +29,69 @@
 				</th>
 			</tr>
 
-			<tr></tr>
 			<tr>
-				<th style="width: 10rem">ID</th>
+				<form action="/inventory">
+					<th>
+						PageNo<input
+							type="text"
+							name="page"
+							value="{{.FilterProducts.PageNo}}"
+						/>
+					</th>
+					<th>
+						PageLimit<input
+							type="text"
+							name="defaultLimit"
+							value="{{.FilterProducts.PageLimit}}"
+						/>
+					</th>
+					<th>
+						<input
+							type="text"
+							name="sortName"
+							value="{{.FilterProducts.SortName}}"
+						/>
+					</th>
+					<th>
+						<input
+							type="text"
+							name="sortSKU"
+							value="{{.FilterProducts.SortSKU}}"
+						/>
+					</th>
+					<th>
+						<input
+							type="text"
+							name="sortEAN"
+							value="{{.FilterProducts.SortEAN}}"
+						/>
+					</th>
+					<th>
+						<input
+							type="text"
+							name="sortOnHand"
+							value="{{.FilterProducts.SortOnHand}}"
+						/>
+					</th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th><input type="submit" style="display: none" /></th>
+				</form>
+			</tr>
+			<tr>
+				<th style="width: 5rem">ID</th>
 				<th style="width: 10rem">Image</th>
 				<th style="width: 25rem">Name</th>
 				<th style="width: 10rem">SKU</th>
-				<th style="width: 15rem">EAN</th>
+				<th style="width: 10rem">EAN</th>
 				<th style="width: 10rem">On hand</th>
 				<th style="width: 10rem">Committed</th>
 				<th style="width: 10rem">Available</th>
+				<th style="width: 10rem">Price</th>
 				<th style="width: 10rem">Action</th>
 			</tr>
-			{{range .Inventorys}}
+			{{if .Inventorys}} {{range .Inventorys}}
 			<tr>
 				<form action="/inventory/update" method="POST">
 					<input type="hidden" name="sku" value="{{.SKU}}" />
@@ -61,26 +110,13 @@
 					<td><input maxlength="10" name="stock" value="{{.Quantity}}" /></td>
 					<td>0</td>
 					<td>0</td>
+					<td><input maxlength="10" name="price" value="{{.Price}}" /></td>
 					<td><input type="submit" value="Update" /></td>
 				</form>
 			</tr>
 			{{end}}
 		</table>
 
-		{{else}}
-		<p>There's nothing to see here... yet!</p>
-		<tr>
-			<th>
-				<form action="/inventory/getfromdecocraft/">
-					<input type="submit" value="DecoCraft" />
-				</form>
-			</th>
-			<th>
-				<form action="/inventory/getfromdecocraft/">
-					<input type="submit" value="Mercerie" />
-				</form>
-			</th>
-		</tr>
 		{{end}}
 	</div>
 </adminhome>

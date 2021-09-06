@@ -31,10 +31,10 @@ func (m *InventoryModel) FindByID(id int) (*models.Inventory, error) {
 
 // This will return the 10 most recently created members.
 func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
-	stmt := `SELECT product.product_id, product.sku, product.ean, product.image, product.quantity, product_description.name
+	stmt := `SELECT product.product_id, product.sku, product.ean, product.image, product.quantity, product.price,product_description.name
 				FROM product
 				INNER JOIN product_description ON product.product_id = product_description.product_id
-				LIMIT 100`
+				LIMIT 10`
 	rows, err := m.DBDC.Query(stmt)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
 
 	for rows.Next() {
 		s := &models.Inventory{}
-		err = rows.Scan(&s.ID, &s.SKU, &s.EAN, &s.Image, &s.Quantity, &s.Name)
+		err = rows.Scan(&s.ID, &s.SKU, &s.EAN, &s.Image, &s.Quantity, &s.Price, &s.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -56,11 +56,11 @@ func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
 	return inventory, nil
 }
 
-func (m *InventoryModel) UpdateStockDecoCraft(sku, quantity string) error {
+func (m *InventoryModel) UpdateStockDecoCraft(sku, quantity string, price float64) error {
 	// fmt.Println(id, stock)
-	stmt := "UPDATE product SET product.quantity = ?  WHERE sku = ?;"
+	stmt := "UPDATE product SET product.quantity = ?, price = ?  WHERE sku = ?;"
 
-	_, err := m.DBDC.Exec(stmt, quantity, sku)
+	_, err := m.DBDC.Exec(stmt, quantity, price, sku)
 	if err != nil {
 		return err
 	}
