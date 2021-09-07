@@ -23,16 +23,16 @@ func ConnectDecoCraft() *sql.DB {
 		userDC, passwordDC, hostDC, portDC, dbnameDC)
 
 	var err error
-	DbPaunCraft, err := sql.Open("mysql", connectionString)
+	DbDecoCraft, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		panic(err)
 	}
 
-	err = DbPaunCraft.Ping()
+	err = DbDecoCraft.Ping()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Successfully connected!")
-	return DbPaunCraft
+	fmt.Println("Successfully connected! - DecoCraft")
+	return DbDecoCraft
 }

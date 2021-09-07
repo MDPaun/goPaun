@@ -50,7 +50,7 @@ func (m *InventoryModel) GetByID(id int) (*models.Inventory, error) {
 // This will return the 10 most recently created members.
 func (m *InventoryModel) Latest(page, defaultLimit int, sortName, sortSKU, sortEAN, sortOnHand string) ([]*models.Inventory, error) {
 
-	stmt := `SELECT id, image, name, sku, ean, quantity, price FROM products
+	stmt := `SELECT id, image, name, sku, ean, quantity, price FROM products 
 				WHERE
 					name ILIKE '%'||$1||'%' AND
 					sku ILIKE '%'||$2||'%' AND
@@ -59,6 +59,9 @@ func (m *InventoryModel) Latest(page, defaultLimit int, sortName, sortSKU, sortE
 				ORDER BY id ASC  LIMIT $5 OFFSET $6;`
 
 	rows, err := m.DB.Query(stmt, sortName, sortSKU, sortEAN, sortOnHand, defaultLimit, (page-1)*defaultLimit)
+	// rows, err := m.DB.Query(stmt)
+	// rows, err := m.DB.Query.SELECT("asdasd")
+
 	// rows, err := m.DB.Query(stmt, sortName, (page-1)*defaultLimit)
 
 	if err != nil {
@@ -123,25 +126,29 @@ func (m *InventoryModel) CountProduct() (total int) {
 	return count
 }
 
-// func (m *InventoryModel) UpdateStock() ([]*models.Inventory, error) {
-// 	stmt := "SELECT id, image, name, sku, ean, quantity FROM products LIMIT 10;"
-// 	rows, err := m.DB.Query(stmt)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer rows.Close()
-// 	inventory := []*models.Inventory{}
+func (m *InventoryModel) GetAllSK() ([]*models.Inventory, error) {
 
-// 	for rows.Next() {
-// 		s := &models.Inventory{}
-// 		err = rows.Scan(&s.ID, &s.Image, &s.Name, &s.SKU, &s.EAN, &s.Quantity)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		inventory = append(inventory, s)
-// 	}
-// 	if err = rows.Err(); err != nil {
-// 		return nil, err
-// 	}
-// 	return inventory, nil
-// }
+	stmt := "SELECT sku, ean, price FROM products WHERE sku ILIKE 'SK%' AND COALESCE(ean, '') <> '';"
+
+	rows, err := m.DB.Query(stmt)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	inventory := []*models.Inventory{}
+
+	for rows.Next() {
+		s := &models.Inventory{}
+		err = rows.Scan(&s.SKU, &s.EAN, &s.Price)
+		if err != nil {
+			return nil, err
+		}
+
+		inventory = append(inventory, s)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return inventory, nil
+}

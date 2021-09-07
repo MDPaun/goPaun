@@ -27,5 +27,6 @@ type FilterProducts struct {
 }
 type InventoryModel struct {
 	DBDC *sql.DB
+	DBMC *sql.DB
 	DB   *sql.DB
 }

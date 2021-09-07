@@ -11,6 +11,7 @@ import (
 	"github.com/MDPaun/goPaun/pkg/account/staff/postgres"
 	storage "github.com/MDPaun/goPaun/pkg/storage"
 	"github.com/MDPaun/goPaun/pkg/store/inventory/mysqlDecoCraft"
+	"github.com/MDPaun/goPaun/pkg/store/inventory/mysqlMercerie"
 	inventory "github.com/MDPaun/goPaun/pkg/store/inventory/postgres"
 )
 
@@ -28,6 +29,9 @@ func main() {
 	dbDC := storage.ConnectDecoCraft()
 	defer dbDC.Close()
 
+	dbMC := storage.ConnectMercerie()
+	defer dbMC.Close()
+
 	// Initialize a new template cache...
 	templateCache, err := config.NewTemplateCache("./../ui/admin/")
 	if err != nil {
@@ -40,6 +44,7 @@ func main() {
 		Staff:         &postgres.StaffModel{DB: db},
 		Inventory:     &inventory.InventoryModel{DB: db},
 		InventoryDC:   &mysqlDecoCraft.InventoryModel{DBDC: dbDC},
+		InventoryMC:   &mysqlMercerie.InventoryModel{DBMC: dbMC},
 		TemplateCache: templateCache,
 	}
 
