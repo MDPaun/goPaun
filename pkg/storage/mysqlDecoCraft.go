@@ -15,7 +15,7 @@ const (
 	portDC     = "3306"
 	userDC     = "decocraf_admin2"
 	passwordDC = "7y+s$+Bs1VJh"
-	dbnameDC   = "decocraf_decocraft3.2"
+	dbnameDC   = "decocraf_decocraft3"
 )
 
 func ConnectDecoCraft() *sql.DB {

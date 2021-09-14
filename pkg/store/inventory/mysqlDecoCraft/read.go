@@ -33,8 +33,7 @@ func (m *InventoryModel) FindByID(id int) (*models.Inventory, error) {
 func (m *InventoryModel) GetProducts() ([]*models.Inventory, error) {
 	stmt := `SELECT product.product_id, product.sku, product.ean, product.image, product.quantity, product.price,product_description.name
 				FROM product
-				INNER JOIN product_description ON product.product_id = product_description.product_id
-				LIMIT 10`
+				INNER JOIN product_description ON product.product_id = product_description.product_id` // LIMIT 5000 OFFSET 9998
 	rows, err := m.DBDC.Query(stmt)
 	if err != nil {
 		return nil, err

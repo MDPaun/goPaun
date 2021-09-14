@@ -144,7 +144,13 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 		for _, inventory := range s {
 			_, err := env.Inventory.GetBySKU(inventory.SKU)
 			if err != nil {
-				image := inventory.Image
+				var image string
+				if inventory.Image == "" {
+					image = "/placeholder.png"
+				} else {
+					image = inventory.Image
+				}
+
 				name := inventory.Name
 				sku := inventory.SKU
 				ean := inventory.EAN
@@ -157,9 +163,10 @@ func GetFromDecoCraft(env *config.Env) http.HandlerFunc {
 					return
 				}
 
-			} else {
-				fmt.Println("Product SKU:", inventory.SKU, "already exist")
 			}
+			// else {
+			// 	fmt.Println("Product SKU:", inventory.SKU, "already exist")
+			// }
 		}
 
 		http.Redirect(w, r, fmt.Sprintln("/inventory"), http.StatusSeeOther)
@@ -225,7 +232,7 @@ func UpdateFromStocklasa(env *config.Env) http.HandlerFunc {
 			// if priceStr == "" {
 			// 	price = 0.00
 			// }
-			fmt.Println(sku, quantity, priceStr)
+			fmt.Println(sku, quantity)
 			// Pass the data to the InventoryModel.Create() method
 			err = env.Inventory.UpdateStock(sku, quantity, priceStr)
 			if err != nil {
@@ -261,7 +268,7 @@ func crawlSK(ean string) (quantity int) {
 		code, _ := strconv.Atoi(re.FindString(e.ChildAttr(uean, "name")))
 
 		e.ForEach(fmt.Sprintf("#dkz_volba_baleni > div.dkz_volba_baleni_spec.dkz_volba_baleni_spec_%d", code), func(_ int, e1 *colly.HTMLElement) {
-			quantity, _ = strconv.Atoi(re.FindString(e1.ChildText("div:first-child > div:nth-child(1) > div:nth-child(5)")))
+			quantity, _ = strconv.Atoi(re.FindString(e1.ChildText("div:first-child > div:nth-child(2) > div:nth-child(5)")))
 
 			// price = strings.ReplaceAll(re.FindString(e1.ChildText("div:first-child > div:nth-child(1) > div:nth-child(3)")), ",", ".")
 
