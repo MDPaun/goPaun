@@ -299,7 +299,7 @@ footer span {
   border-bottom: 1px solid #ffffff;
 }
 .table-container table tr:nth-child(2n) {
-  background-color: #ff913e;
+  background-color: rgba(255, 145, 62, 0.3);
 }
 
 .center-container {

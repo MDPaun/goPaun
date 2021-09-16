@@ -34,7 +34,7 @@
 		}
 
 		tr:nth-child(2n) {
-			background-color: $secondary-l;
+			background-color: rgba($secondary-l, 0.3);
 		}
 	}
 }

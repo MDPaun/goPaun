@@ -55,7 +55,8 @@ func (m *InventoryModel) Latest(page, defaultLimit int, sortName, sortSKU, sortE
 					name ILIKE '%'||$1||'%' AND
 					sku ILIKE '%'||$2||'%' AND
 					ean ILIKE '%'||$3||'%' AND
-					quantity::text ILIKE '%'||$4||'%'
+					quantity::text ILIKE '%'||$4||'%' AND
+					price > 0
 				ORDER BY id ASC  LIMIT $5 OFFSET $6;`
 
 	rows, err := m.DB.Query(stmt, sortName, sortSKU, sortEAN, sortOnHand, defaultLimit, (page-1)*defaultLimit)
