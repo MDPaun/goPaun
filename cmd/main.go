@@ -15,7 +15,7 @@ import (
 	inventory "github.com/MDPaun/goPaun/pkg/store/inventory/postgres"
 )
 
-func main() {
+func main() { 
 
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
