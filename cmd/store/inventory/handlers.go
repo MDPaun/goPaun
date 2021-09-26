@@ -217,7 +217,7 @@ func UpdateFromStocklasa(env *config.Env) http.HandlerFunc {
 			return
 		}
 
-		for _, inventory := range s {
+		for _, inventory := range s { 
 
 			q := crawlSK(inventory.EAN)
 
