@@ -208,6 +208,13 @@ func GetFromMercerie(env *config.Env) http.HandlerFunc {
 	}
 }
 
+type data struct {
+	ean      string
+	quantity int
+	sku      string
+	price    float64
+}
+
 func UpdateFromStocklasa(env *config.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -216,22 +223,18 @@ func UpdateFromStocklasa(env *config.Env) http.HandlerFunc {
 			env.ServerError(w, err)
 			return
 		}
+		fmt.Println("Produse SK in stoc:", len(s))
 
-		for _, inventory := range s { 
+		qchan := make(chan data)
 
-			q := crawlSK(inventory.EAN)
+		for _, inventory := range s {
+			go crawlSK(inventory.EAN, inventory.SKU, inventory.Quantity, inventory.Price, qchan)
+			// ! adaugat aici sa ruleze decat cate 1
+			data := <-qchan
+			quantity := strconv.Itoa(data.quantity)
 
-			quantity := strconv.Itoa(q)
-			sku := inventory.SKU
-			priceStr := inventory.Price
-			// price, err := strconv.ParseFloat(priceStr, 64)
-			// if err != nil && priceStr != "" {
-			// 	env.NotFound(w)
-			// 	return
-			// }
-			// if priceStr == "" {
-			// 	price = 0.00
-			// }
+			sku := data.sku
+			priceStr := data.price
 			fmt.Println(sku, quantity)
 			// Pass the data to the InventoryModel.Create() method
 			err = env.Inventory.UpdateStock(sku, quantity, priceStr)
@@ -249,13 +252,76 @@ func UpdateFromStocklasa(env *config.Env) http.HandlerFunc {
 				log.Fatal(err)
 				return
 			}
-			// Redirect the user to the relevant page for the snippet.
 		}
+
+		//  for i := 0; i < len(s); i++ {
+		// 	data := <-qchan
+		// 	quantity := strconv.Itoa(data.quantity)
+
+		// 	sku := data.sku
+		// 	priceStr := data.price
+		// 	fmt.Println(sku, quantity)
+		// 	// Pass the data to the InventoryModel.Create() method
+		// 	err = env.Inventory.UpdateStock(sku, quantity, priceStr)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 		return
+		// 	}
+		// 	err = env.InventoryDC.UpdateStockDecoCraft(sku, quantity, priceStr)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 		return
+		// 	}
+		// 	err = env.InventoryMC.UpdateStockMercerie(sku, quantity, priceStr)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 		return
+		// 	}
+		// }
+
+		// for _, inventory := range s {
+
+		// 	qchan := make(chan int)
+		// 	go crawlSK(inventory.EAN, qchan)
+
+		// 	// q := crawlSK(inventory.EAN)
+
+		// 	quantity := strconv.Itoa(<-qchan)
+		// 	// quantity := strconv.Itoa(q)
+		// 	sku := inventory.SKU
+		// 	priceStr := inventory.Price
+		// 	// price, err := strconv.ParseFloat(priceStr, 64)
+		// 	// if err != nil && priceStr != "" {
+		// 	// 	env.NotFound(w)
+		// 	// 	return
+		// 	// }
+		// 	// if priceStr == "" {
+		// 	// 	price = 0.00
+		// 	// }
+		// 	fmt.Println(sku, quantity)
+		// 	// Pass the data to the InventoryModel.Create() method
+		// 	err = env.Inventory.UpdateStock(sku, quantity, priceStr)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 		return
+		// 	}
+		// 	err = env.InventoryDC.UpdateStockDecoCraft(sku, quantity, priceStr)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 		return
+		// 	}
+		// 	err = env.InventoryMC.UpdateStockMercerie(sku, quantity, priceStr)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 		return
+		// 	}
+		// 	// Redirect the user to the relevant page for the snippet.
+		// }
 		http.Redirect(w, r, fmt.Sprintln("/inventory"), http.StatusSeeOther)
 	}
 }
 
-func crawlSK(ean string) (quantity int) {
+func crawlSK(ean, sku string, quantity int, price float64, qchan chan data) { //ean string,
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.stoklasa.ro"),
@@ -268,8 +334,8 @@ func crawlSK(ean string) (quantity int) {
 		code, _ := strconv.Atoi(re.FindString(e.ChildAttr(uean, "name")))
 
 		e.ForEach(fmt.Sprintf("#dkz_volba_baleni > div.dkz_volba_baleni_spec.dkz_volba_baleni_spec_%d", code), func(_ int, e1 *colly.HTMLElement) {
-			quantity, _ = strconv.Atoi(re.FindString(e1.ChildText("div:first-child > div:nth-child(2) > div:nth-child(5)")))
-
+			quantity, _ := strconv.Atoi(re.FindString(e1.ChildText("div:first-child > div:nth-child(2) > div:nth-child(5)")))
+			qchan <- data{ean: ean, sku: sku, quantity: quantity, price: price}
 			// price = strings.ReplaceAll(re.FindString(e1.ChildText("div:first-child > div:nth-child(1) > div:nth-child(3)")), ",", ".")
 
 		})
@@ -278,6 +344,34 @@ func crawlSK(ean string) (quantity int) {
 	url := fmt.Sprintf("https://www.stoklasa.ro/index.php?text=%s&skupina=h01", ean)
 	c.Visit(url)
 
-	return quantity
+	// return quantity
 
 }
+
+// // func crawlSK(ean string) (quantity int) {
+// func crawlSK(ean string, qchan chan int) {
+
+// 	c := colly.NewCollector(
+// 		colly.AllowedDomains("www.stoklasa.ro"),
+// 	)
+
+// 	c.OnHTML("#dkz", func(e *colly.HTMLElement) {
+
+// 		re := regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
+// 		uean := fmt.Sprintf("input[data-ean='%s']", ean)
+// 		code, _ := strconv.Atoi(re.FindString(e.ChildAttr(uean, "name")))
+
+// 		e.ForEach(fmt.Sprintf("#dkz_volba_baleni > div.dkz_volba_baleni_spec.dkz_volba_baleni_spec_%d", code), func(_ int, e1 *colly.HTMLElement) {
+// 			quantity, _ := strconv.Atoi(re.FindString(e1.ChildText("div:first-child > div:nth-child(2) > div:nth-child(5)")))
+// 			qchan <- quantity //! de sters doar de test pentru chan
+// 			// price = strings.ReplaceAll(re.FindString(e1.ChildText("div:first-child > div:nth-child(1) > div:nth-child(3)")), ",", ".")
+
+// 		})
+// 	})
+
+// 	url := fmt.Sprintf("https://www.stoklasa.ro/index.php?text=%s&skupina=h01", ean)
+// 	c.Visit(url)
+
+// 	// return quantity
+
+// }
